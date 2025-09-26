@@ -8,30 +8,6 @@ Whether you're a student, tourist, researcher, or simply curious, StoryMap.ai he
 
 Turn location data into emotional, interactive stories. By blending Groq-powered AI narratives, Qloo cultural insights, and Tavily's local knowledge with an interactive Leaflet map, StoryMap.ai lets users explore towns, farms, and remote regions as if guided by a local storyteller.
 
-## ✨ Feature Highlights
-
-### 🎨 Outback Culture Explorer
-- **AI Narratives**: Groq generates engaging, human-like stories about local culture
-- **Cultural Recommendations**: Qloo provides music, art, and film suggestions from each region
-- **Interactive Media**: Users can listen to songs and view artwork, turning learning into an immersive experience
-- **Map Overlays**: Leaflet highlights museums, indigenous landmarks, and local events
-
-### 📖 AI Rural Storyteller
-- **Mini Documentaries**: Select a town/farm/mining area → get multi-paragraph AI-curated narratives blending history, industry, and human stories
-- **AI-Generated Art**: Visual interpretations of a region's past, present, or imagined future
-- **Shareable Stories**: One-click share to social media — perfect for tourism campaigns or educators
-
-### 🌡️ Climate Memory Map
-- **Past vs Future**: Interactive before/after visualizations for bushfire-hit, flood-prone, or drought-affected areas
-- **AI Tips**: Groq suggests preparation measures and local support resources
-- **Community Input**: Crowdsource stories and experiences to enrich the map's emotional depth
-
-### 🪃 Indigenous Knowledge Preserver
-- **Language Revival**: Learn words and phrases from endangered First Nations languages
-- **Dreamtime Stories**: AI curates and retells indigenous myths tied to the land
-- **Art & Music**: Qloo recommends indigenous creators and music playlists
-- **Interactive Quizzes**: Gamified cultural learning experiences
-
 
 ## 🛠️ Tech Stack
 
