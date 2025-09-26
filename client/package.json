@@ -1,0 +1,37 @@
+{
+  "name": "storymap-client",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.8.0",
+    "leaflet": "^1.9.4",
+    "react-leaflet": "^4.2.1",
+    "axios": "^1.3.4",
+    "tailwindcss": "^3.2.7"
+  },
+  "scripts": {
+    "start": "set DISABLE_ESLINT_PLUGIN=true && react-scripts start",
+    "build": "set DISABLE_ESLINT_PLUGIN=true && react-scripts build",
+    "dev": "set DISABLE_ESLINT_PLUGIN=true && react-scripts start",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "devDependencies": {
+    "react-scripts": "5.0.1",
+    "@types/leaflet": "^1.9.3"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

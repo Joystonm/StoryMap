@@ -1,0 +1,18 @@
+{
+  "name": "storymap-ai",
+  "version": "1.0.0",
+  "description": "StoryMap.ai - Interactive storytelling with AI and maps",
+  "scripts": {
+    "install-all": "cd client && npm install && cd ../server && npm install",
+    "dev": "concurrently \"cd server && npm run dev\" \"cd client && npm start\"",
+    "build": "cd client && npm run build",
+    "start": "cd server && npm start"
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0"
+  },
+  "workspaces": ["client", "server"],
+  "keywords": ["storymap", "ai", "maps", "storytelling"],
+  "author": "",
+  "license": "MIT"
+}
