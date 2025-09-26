@@ -32,27 +32,6 @@ Turn location data into emotional, interactive stories. By blending Groq-powered
 - **Art & Music**: Qloo recommends indigenous creators and music playlists
 - **Interactive Quizzes**: Gamified cultural learning experiences
 
-## 🚀 How It Works
-
-1. **User Opens App** → Clean map interface with search bar and "Explore" button
-2. **Location Selection** → Click map pin or search for a town
-3. **Backend Fetches Data** (No Database Needed):
-   - Tavily → Local events, history snippets
-   - Qloo → Culture, art, music, movies
-   - Groq → Generates stories, tips, and contextual insights
-4. **Frontend Displays Result**:
-   - Map zooms to selected area
-   - Left panel shows narrative, music, art suggestions
-   - Right panel shows climate visualization (if relevant)
-   - Optional "Generate Art" button for AI-generated images
-5. **User Interacts & Shares** → Save, share, or explore nearby towns
-
-## 🎨 UI/UX Vision
-
-- **Landing Page**: Hero section with tagline "Explore the untold stories of rural Australia"
-- **Map-First Layout**: Interactive map with scrollable narrative panel
-- **Mood**: Soft, earthy tones giving an authentic Outback vibe
-- **Animations**: Smooth transitions when zooming or loading stories
 
 ## 🛠️ Tech Stack
 
@@ -60,16 +39,8 @@ Turn location data into emotional, interactive stories. By blending Groq-powered
 |-------|------------|
 | **Frontend** | React.js, Tailwind CSS, Leaflet.js |
 | **Backend** | Node.js + Express (stateless) |
-| **APIs** | Groq (AI storytelling), Tavily (local data), Qloo (culture recs), OpenStreetMap (map data) |
-| **AI Components** | Groq for text generation, optional AI image generation |
-
-## 🌟 Why It's Unique
-
-- ✅ **Transforms maps into stories** → not just data visualization
-- ✅ **Blends education + entertainment** → ideal for students & tourists
-- ✅ **Celebrates Indigenous culture** → raises awareness & preserves knowledge
-- ✅ **Gamified exploration** → keeps users engaged longer
-- ✅ **Hackathon-ready** → lightweight, real-time, no DB needed
+| **APIs** | Groq (AI storytelling), Tavily (local data), TasteDive (culture recs), OpenStreetMap (map data) |
+| **AI Components** | Groq for text generation |
 
 ## 🌍 Potential Impact
 
@@ -112,61 +83,6 @@ Turn location data into emotional, interactive stories. By blending Groq-powered
    Frontend: http://localhost:3000
    Backend: http://localhost:5000
    ```
+   
 
-## 📁 Project Structure
-
-```
-├── client/                         # React Frontend
-│   ├── public/                     # Static assets
-│   ├── src/
-│   │   ├── components/             # Reusable UI components
-│   │   ├── pages/                  # Route components
-│   │   ├── hooks/                  # Custom React hooks
-│   │   └── utils/                  # Helper functions
-│   └── package.json
-│
-├── server/                         # Node.js Backend
-│   ├── config/                     # API configuration
-│   ├── controllers/                # Route handlers
-│   ├── routes/                     # API routes
-│   ├── services/                   # External API integrations
-│   └── package.json
-│
-├── .env                           # Environment variables
-└── package.json                   # Root package configuration
-```
-
-## 🔧 API Integration
-
-### Groq (AI Storytelling)
-- Generate location-based narratives
-- Create character profiles
-- Produce climate change stories
-- Generate educational quiz questions
-
-### Qloo (Cultural Recommendations)
-- Music recommendations by region
-- Art and cultural insights
-- Local cultural events and attractions
-
-### Tavily (Real-time Search)
-- Historical information about locations
-- Climate data and projections
-- Indigenous knowledge and learning resources
-
-### OpenStreetMap (Geographic Data)
-- Location search and geocoding
-- Map tiles and geographic boundaries
-- Points of interest mapping
-
-## 🤝 Contributing
-
-We welcome contributions! Please read our contributing guidelines and feel free to submit issues and pull requests.
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
----
-
-**StoryMap.ai** - Transforming the way we explore and understand rural Australia through the power of AI storytelling. 🇦🇺✨
+derstand rural Australia through the power of AI storytelling. 🇦🇺✨
