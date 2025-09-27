@@ -19,34 +19,32 @@ const createClimateIcon = (type, count) => {
         width: 32px;
         height: 32px;
         background: ${config.color};
-        border: 3px solid white;
         border-radius: 50%;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 16px;
-      ">
-        ${config.emoji}
-        ${count > 1 ? `
-          <div style="
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: white;
-            color: ${config.color};
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            font-weight: bold;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-          ">${count}</div>
-        ` : ''}
-      </div>
+        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        border: 2px solid white;
+      ">${config.emoji}</div>
+      ${count > 1 ? `
+        <div style="
+          position: absolute;
+          top: -8px;
+          right: -8px;
+          background: #ef4444;
+          color: white;
+          border-radius: 50%;
+          width: 18px;
+          height: 18px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 10px;
+          font-weight: bold;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        ">${count}</div>
+      ` : ''}
     `,
     className: 'climate-marker',
     iconSize: [32, 32],
@@ -72,15 +70,20 @@ const ClimateMapView = ({
   center = [-25.2744, 133.7751], 
   zoom = 6, 
   climateEvents = [],
-  activeFilters = ['bushfires', 'floods', 'droughts'],
   onEventClick = null 
 }) => {
   const mapRef = useRef();
 
-  // Filter events based on active filters
-  const filteredEvents = climateEvents.filter(event => 
-    activeFilters.includes(event.type)
-  );
+  // Show ALL events - no filtering
+  const allEvents = climateEvents;
+
+  console.log('Showing all events:', allEvents.length);
+  console.log('Event coordinates check:', allEvents.map(e => ({
+    id: e.id,
+    type: e.type,
+    coordinates: e.coordinates,
+    valid: e.coordinates && Array.isArray(e.coordinates) && e.coordinates.length === 2
+  })));
 
   return (
     <div className="relative h-full w-full">
@@ -114,12 +117,23 @@ const ClimateMapView = ({
         
         <MapUpdater center={center} zoom={zoom} />
         
-        {/* Climate Event Markers */}
-        {filteredEvents.map((event) => (
+        {/* Climate Event Markers - ALL EVENTS */}
+        {allEvents.filter(event => 
+          event.coordinates && 
+          Array.isArray(event.coordinates) && 
+          event.coordinates.length === 2 &&
+          typeof event.coordinates[0] === 'number' && 
+          typeof event.coordinates[1] === 'number'
+        ).map((event) => (
           <Marker 
             key={event.id} 
-            position={[event.lat, event.lon]}
-            icon={createClimateIcon(event.type, event.count)}
+            position={[event.coordinates[0], event.coordinates[1]]}
+            icon={createClimateIcon(
+              event.type === 'Bushfire' ? 'bushfires' : 
+              event.type === 'Flood' ? 'floods' : 
+              event.type === 'Drought' ? 'droughts' : 'droughts',
+              1
+            )}
             eventHandlers={{
               click: () => {
                 if (onEventClick) {
@@ -133,49 +147,48 @@ const ClimateMapView = ({
               closeButton={true}
               offset={[0, -16]}
             >
-              <div className="bg-white rounded-lg p-4 min-w-[200px]">
-                <div className="flex items-center space-x-2 mb-2">
-                  <span className="text-xl">
-                    {event.type === 'bushfires' ? '🔥' : 
-                     event.type === 'floods' ? '🌊' : '🌵'}
+              <div className="bg-white rounded-lg p-4 min-w-[250px]">
+                <div className="flex items-center space-x-2 mb-3">
+                  <span className="text-2xl">
+                    {event.type === 'Bushfire' ? '🔥' : 
+                     event.type === 'Flood' ? '🌊' : '🌵'}
                   </span>
-                  <h3 className="font-semibold text-gray-900 capitalize">
-                    {event.type.slice(0, -1)} Events
-                  </h3>
+                  <div>
+                    <h3 className="font-bold text-lg text-gray-900">{event.type}</h3>
+                    <p className="text-sm text-gray-600">{event.location}</p>
+                  </div>
                 </div>
                 
-                <div className="space-y-2 text-sm">
+                <div className="space-y-2 mb-3">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Location:</span>
-                    <span className="font-medium">{event.location}</span>
+                    <span className="text-sm font-medium text-gray-700">Year:</span>
+                    <span className="text-sm text-gray-900">{event.year}</span>
                   </div>
-                  
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Events:</span>
-                    <span className="font-medium">{event.count}</span>
-                  </div>
-                  
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Severity:</span>
-                    <span className={`font-medium capitalize ${
-                      event.severity === 'high' ? 'text-red-600' :
-                      event.severity === 'medium' ? 'text-orange-600' :
-                      'text-yellow-600'
+                    <span className="text-sm font-medium text-gray-700">Severity:</span>
+                    <span className={`text-sm px-2 py-1 rounded ${
+                      event.severity === 'Extreme' ? 'bg-red-100 text-red-800' :
+                      event.severity === 'High' ? 'bg-orange-100 text-orange-800' :
+                      event.severity === 'Major' ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-blue-100 text-blue-800'
                     }`}>
                       {event.severity}
                     </span>
                   </div>
-                  
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Last Event:</span>
-                    <span className="font-medium">{event.lastEvent}</span>
+                    <span className="text-sm font-medium text-gray-700">Frequency:</span>
+                    <span className="text-sm text-gray-900">
+                      {allEvents.filter(e => 
+                        e.location === event.location && 
+                        e.type === event.type
+                      ).length} times
+                    </span>
                   </div>
-                  
-                  <div className="mt-3 pt-2 border-t border-gray-200">
-                    <p className="text-gray-700 text-xs">
-                      {event.description}
-                    </p>
-                  </div>
+                </div>
+                
+                <div className="border-t pt-2">
+                  <p className="text-xs text-gray-600 mb-2">Impact:</p>
+                  <p className="text-sm text-gray-800">{event.impact}</p>
                 </div>
               </div>
             </Popup>
@@ -183,40 +196,37 @@ const ClimateMapView = ({
         ))}
       </MapContainer>
       
-      {/* Legend */}
+      {/* Event Legend - No Filters */}
       <div className="absolute top-4 right-4 z-20">
         <div className="bg-white/95 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/20">
           <h4 className="font-semibold text-gray-900 mb-3 text-sm">Climate Events</h4>
           <div className="space-y-2">
-            {[
-              { type: 'bushfires', label: 'Bushfires', icon: '🔥', color: 'text-red-600' },
-              { type: 'floods', label: 'Floods', icon: '🌊', color: 'text-blue-600' },
-              { type: 'droughts', label: 'Droughts', icon: '🌵', color: 'text-yellow-600' }
-            ].map(item => {
-              const count = filteredEvents.filter(e => e.type === item.type).length;
-              const isActive = activeFilters.includes(item.type);
-              
-              return (
-                <div key={item.type} className={`flex items-center space-x-2 text-xs ${
-                  isActive ? 'opacity-100' : 'opacity-40'
-                }`}>
-                  <span className="text-sm">{item.icon}</span>
-                  <span className={`font-medium ${item.color}`}>{item.label}</span>
-                  <span className="text-gray-500">({count})</span>
-                </div>
-              );
-            })}
+            <div className="flex items-center space-x-2">
+              <span className="text-lg">🔥</span>
+              <span className="text-sm font-medium text-gray-700">Bushfires</span>
+              <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded-full">
+                {allEvents.filter(e => e.type === 'Bushfire').length}
+              </span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <span className="text-lg">🌊</span>
+              <span className="text-sm font-medium text-gray-700">Floods</span>
+              <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+                {allEvents.filter(e => e.type === 'Flood').length}
+              </span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <span className="text-lg">🌵</span>
+              <span className="text-sm font-medium text-gray-700">Droughts</span>
+              <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full">
+                {allEvents.filter(e => e.type === 'Drought').length}
+              </span>
+            </div>
           </div>
-        </div>
-      </div>
-      
-      {/* Event count indicator */}
-      <div className="absolute bottom-4 left-4 z-20">
-        <div className="bg-white/95 backdrop-blur-sm rounded-xl px-4 py-2 shadow-lg border border-white/20">
-          <div className="flex items-center space-x-2">
-            <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+          
+          <div className="mt-3 pt-3 border-t border-gray-200">
             <span className="text-sm font-medium text-gray-800">
-              {filteredEvents.length} events displayed
+              {allEvents.length} total events displayed
             </span>
           </div>
         </div>

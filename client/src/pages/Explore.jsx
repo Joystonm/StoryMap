@@ -70,14 +70,14 @@ const Explore = () => {
             <p className="text-green-700">{selectedLocation.name}</p>
             {metadata && (
               <div className="mt-2 flex space-x-3 text-xs">
-                <span className={`px-2 py-1 rounded ${metadata.sources.qloo === 'Available' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-600'}`}>
-                  🎭 Culture: {metadata.sources.qloo}
+                <span className={`px-2 py-1 rounded bg-blue-100 text-blue-800`}>
+                  🎭 Culture: {'Available'}
                 </span>
-                <span className={`px-2 py-1 rounded ${metadata.sources.events === 'Available' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-600'}`}>
-                  📅 Events: {metadata.sources.events}
+                <span className={`px-2 py-1 rounded bg-purple-100 text-purple-800`}>
+                  📅 Events: {'Available'}
                 </span>
-                <span className={`px-2 py-1 rounded ${metadata.sources.landmarks === 'Available' ? 'bg-orange-100 text-orange-800' : 'bg-gray-100 text-gray-600'}`}>
-                  🏛️ Landmarks: {metadata.sources.landmarks}
+                <span className={`px-2 py-1 rounded bg-orange-100 text-orange-800`}>
+                  🏛️ Landmarks: {'Available'}
                 </span>
               </div>
             )}

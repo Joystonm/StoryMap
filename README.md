@@ -11,22 +11,26 @@ Turn location data into emotional, interactive stories. By blending Groq-powered
 ## ✨ Feature Highlights
 
 ### 🎨 Outback Culture Explorer
+
 - **AI Narratives**: Groq generates engaging, human-like stories about local culture
 - **Cultural Recommendations**: Qloo provides music, art, and film suggestions from each region
 - **Interactive Media**: Users can listen to songs and view artwork, turning learning into an immersive experience
 - **Map Overlays**: Leaflet highlights museums, indigenous landmarks, and local events
 
 ### 📖 AI Rural Storyteller
+
 - **Mini Documentaries**: Select a town/farm/mining area → get multi-paragraph AI-curated narratives blending history, industry, and human stories
 - **AI-Generated Art**: Visual interpretations of a region's past, present, or imagined future
 - **Shareable Stories**: One-click share to social media — perfect for tourism campaigns or educators
 
 ### 🌡️ Climate Memory Map
+
 - **Past vs Future**: Interactive before/after visualizations for bushfire-hit, flood-prone, or drought-affected areas
 - **AI Tips**: Groq suggests preparation measures and local support resources
 - **Community Input**: Crowdsource stories and experiences to enrich the map's emotional depth
 
 ### 🪃 Indigenous Knowledge Preserver
+
 - **Language Revival**: Learn words and phrases from endangered First Nations languages
 - **Dreamtime Stories**: AI curates and retells indigenous myths tied to the land
 - **Art & Music**: Qloo recommends indigenous creators and music playlists
@@ -56,12 +60,12 @@ Turn location data into emotional, interactive stories. By blending Groq-powered
 
 ## 🛠️ Tech Stack
 
-| Layer | Technology |
-|-------|------------|
-| **Frontend** | React.js, Tailwind CSS, Leaflet.js |
-| **Backend** | Node.js + Express (stateless) |
-| **APIs** | Groq (AI storytelling), Tavily (local data), Qloo (culture recs), OpenStreetMap (map data) |
-| **AI Components** | Groq for text generation, optional AI image generation |
+| Layer             | Technology                                                                                 |
+| ----------------- | ------------------------------------------------------------------------------------------ |
+| **Frontend**      | React.js, Tailwind CSS, Leaflet.js                                                         |
+| **Backend**       | Node.js + Express (stateless)                                                              |
+| **APIs**          | Groq (AI storytelling), Tavily (local data), Qloo (culture recs), OpenStreetMap (map data) |
+| **AI Components** | Groq for text generation, optional AI image generation                                     |
 
 ## 🌟 Why It's Unique
 
@@ -74,35 +78,42 @@ Turn location data into emotional, interactive stories. By blending Groq-powered
 ## 🌍 Potential Impact
 
 ### For Locals
+
 - Revives pride in small towns & indigenous roots
 - Raises awareness about climate impact & resilience
 
 ### For Tourists
+
 - Creates a cultural guidebook for hidden gems
 - Provides authentic, AI-curated travel experiences
 
 ### For Educators
+
 - Becomes a teaching tool for Australian history & geography
 - Interactive learning about Indigenous culture and climate science
 
 ### For Communities
+
 - Platform for sharing local stories and experiences
 - Preserves cultural knowledge for future generations
 
 ## 🚀 Quick Start
 
 1. **Install dependencies:**
+
    ```bash
    npm run install-all
    ```
 
 2. **Set up environment variables:**
+
    ```bash
    cp .env.example .env
    # Add your API keys for Groq, Qloo, and Tavily
    ```
 
 3. **Run development servers:**
+
    ```bash
    npm run dev
    ```
@@ -139,22 +150,26 @@ Turn location data into emotional, interactive stories. By blending Groq-powered
 ## 🔧 API Integration
 
 ### Groq (AI Storytelling)
+
 - Generate location-based narratives
 - Create character profiles
 - Produce climate change stories
 - Generate educational quiz questions
 
 ### Qloo (Cultural Recommendations)
+
 - Music recommendations by region
 - Art and cultural insights
 - Local cultural events and attractions
 
 ### Tavily (Real-time Search)
+
 - Historical information about locations
 - Climate data and projections
 - Indigenous knowledge and learning resources
 
 ### OpenStreetMap (Geographic Data)
+
 - Location search and geocoding
 - Map tiles and geographic boundaries
 - Points of interest mapping

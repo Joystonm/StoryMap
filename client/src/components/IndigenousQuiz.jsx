@@ -11,7 +11,7 @@ const IndigenousQuiz = ({ questions = [], location, onRegenerateQuiz }) => {
     setSelectedAnswer(answerIndex);
     setShowFeedback(true);
     
-    if (questions[currentQuestion]?.correctAnswer === answerIndex) {
+    if (questions[currentQuestion]?.correct === answerIndex) {
       setScore(score + 1);
     }
   };
@@ -75,7 +75,7 @@ const IndigenousQuiz = ({ questions = [], location, onRegenerateQuiz }) => {
               🔄 Retake Quiz
             </button>
             <button
-              onClick={onRegenerateQuiz}
+              onClick={() => { resetQuiz(); onRegenerateQuiz(); }}
               className="px-6 py-3 bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition-colors font-medium"
             >
               ✨ Try Another Quiz
@@ -87,7 +87,7 @@ const IndigenousQuiz = ({ questions = [], location, onRegenerateQuiz }) => {
   }
 
   const question = questions[currentQuestion];
-  const isCorrect = selectedAnswer === question.correctAnswer;
+  const isCorrect = selectedAnswer === question.correct;
 
   return (
     <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg overflow-hidden">
@@ -129,7 +129,7 @@ const IndigenousQuiz = ({ questions = [], location, onRegenerateQuiz }) => {
                     ? isCorrect
                       ? 'bg-green-100 border-green-500 text-green-800 shadow-lg'
                       : 'bg-red-100 border-red-500 text-red-800 shadow-lg'
-                    : index === question.correctAnswer
+                    : index === question.correct
                       ? 'bg-green-100 border-green-500 text-green-800 shadow-lg'
                       : 'bg-gray-50 border-gray-200 text-gray-600'
                   : 'hover:bg-orange-50 border-gray-200 hover:border-orange-300 hover:shadow-md'
@@ -141,13 +141,13 @@ const IndigenousQuiz = ({ questions = [], location, onRegenerateQuiz }) => {
                     ? isCorrect
                       ? 'border-green-500 bg-green-500 text-white'
                       : 'border-red-500 bg-red-500 text-white'
-                    : showFeedback && index === question.correctAnswer
+                    : showFeedback && index === question.correct
                       ? 'border-green-500 bg-green-500 text-white'
                       : 'border-current'
                 }`}>
                   {showFeedback && selectedAnswer === index
                     ? isCorrect ? '✓' : '✗'
-                    : showFeedback && index === question.correctAnswer
+                    : showFeedback && index === question.correct
                       ? '✓'
                       : String.fromCharCode(65 + index)
                   }
@@ -178,7 +178,7 @@ const IndigenousQuiz = ({ questions = [], location, onRegenerateQuiz }) => {
                 }`}>
                   {question.explanation || (isCorrect 
                     ? 'Great job! You have good knowledge of Indigenous culture.'
-                    : `The correct answer is: ${question.options[question.correctAnswer]}`
+                    : `The correct answer is: ${question.options[question.correct]}`
                   )}
                 </p>
               </div>
@@ -202,7 +202,7 @@ const IndigenousQuiz = ({ questions = [], location, onRegenerateQuiz }) => {
         {!showFeedback && (
           <div className="text-center mt-6">
             <button
-              onClick={onRegenerateQuiz}
+              onClick={() => { resetQuiz(); onRegenerateQuiz(); }}
               className="text-orange-600 hover:text-orange-800 text-sm font-medium transition-colors"
             >
               ✨ Generate New Questions

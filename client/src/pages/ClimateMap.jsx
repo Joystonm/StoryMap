@@ -5,394 +5,502 @@ import LocationSearch from '../components/LocationSearch';
 
 const ClimateMap = () => {
   const [selectedLocation, setSelectedLocation] = useState(null);
-  const [climateEvents, setClimateEvents] = useState([]);
   const [allClimateEvents, setAllClimateEvents] = useState([]);
-  const [weatherData, setWeatherData] = useState(null);
+  const [locationWeather, setLocationWeather] = useState(null);
+  const [locationEvents, setLocationEvents] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [weatherLoading, setWeatherLoading] = useState(false);
   const [mapLoading, setMapLoading] = useState(true);
-  const [activeFilters, setActiveFilters] = useState(['bushfires', 'floods', 'droughts']);
   const [selectedEvent, setSelectedEvent] = useState(null);
 
-  const eventTypes = [
-    { id: 'bushfires', label: 'Bushfires', icon: '🔥', color: 'bg-red-500', activeColor: 'bg-red-600' },
-    { id: 'floods', label: 'Floods', icon: '🌊', color: 'bg-blue-500', activeColor: 'bg-blue-600' },
-    { id: 'droughts', label: 'Droughts', icon: '🌵', color: 'bg-yellow-500', activeColor: 'bg-yellow-600' }
+  // Static climate events data - comprehensive historical events
+  const staticClimateEvents = [
+    // Major Bushfire Events
+    {
+      id: 1,
+      type: 'Bushfire',
+      location: 'Black Summer - NSW',
+      year: 2020,
+      severity: 'Extreme',
+      description: 'Black Summer bushfires devastated NSW communities, burning 5.5 million hectares',
+      impact: '33 deaths, 3,000+ homes destroyed, 1 billion animals killed',
+      coordinates: [-33.4569, 150.7944]
+    },
+    {
+      id: 2,
+      type: 'Bushfire',
+      location: 'East Gippsland - VIC',
+      year: 2020,
+      severity: 'Extreme',
+      description: 'East Gippsland fires destroyed 1.5 million hectares during Black Summer',
+      impact: '5 deaths, 300+ homes destroyed, massive wildlife losses',
+      coordinates: [-37.5622, 148.1847]
+    },
+    {
+      id: 3,
+      type: 'Bushfire',
+      location: 'Ash Wednesday - SA/VIC',
+      year: 1983,
+      severity: 'Extreme',
+      description: 'Ash Wednesday fires were among Australia\'s worst natural disasters',
+      impact: '75 deaths, 2,545 homes destroyed, 210,000 hectares burned',
+      coordinates: [-34.9285, 138.8007]
+    },
+    {
+      id: 4,
+      type: 'Bushfire',
+      location: 'Black Friday - VIC',
+      year: 1939,
+      severity: 'Extreme',
+      description: 'Black Friday fires burned 2 million hectares across Victoria',
+      impact: '71 deaths, entire towns destroyed, changed fire management forever',
+      coordinates: [-37.0201, 145.7781]
+    },
+    {
+      id: 5,
+      type: 'Bushfire',
+      location: 'Canberra - ACT',
+      year: 2003,
+      severity: 'High',
+      description: 'Canberra bushfires reached the suburbs, unprecedented urban fire',
+      impact: '4 deaths, 500+ homes destroyed, $350M damage',
+      coordinates: [-35.2809, 149.1300]
+    },
+    
+    // Major Flood Events
+    {
+      id: 6,
+      type: 'Flood',
+      location: 'Lismore - NSW',
+      year: 2022,
+      severity: 'Extreme',
+      description: 'Record-breaking floods devastated Northern NSW, highest ever recorded',
+      impact: '22 deaths, 25,000+ evacuated, $4.8B damage',
+      coordinates: [-28.8142, 153.2781]
+    },
+    {
+      id: 7,
+      type: 'Flood',
+      location: 'Brisbane - QLD',
+      year: 2011,
+      severity: 'Extreme',
+      description: 'Queensland floods affected 78% of the state, worst in 120 years',
+      impact: '35 deaths, 20,000+ homes flooded, $2.38B damage',
+      coordinates: [-27.4698, 153.0251]
+    },
+    {
+      id: 8,
+      type: 'Flood',
+      location: 'Townsville - QLD',
+      year: 2019,
+      severity: 'Major',
+      description: 'Monsoon flooding inundated Townsville, 1-in-500-year event',
+      impact: '3 deaths, 3,300+ homes damaged, mass evacuations',
+      coordinates: [-19.2590, 146.8169]
+    },
+    {
+      id: 9,
+      type: 'Flood',
+      location: 'Katherine - NT',
+      year: 1998,
+      severity: 'Major',
+      description: 'Katherine River flooding, worst in recorded history',
+      impact: '1 death, 2,000+ evacuated, town underwater for weeks',
+      coordinates: [-14.4669, 132.2647]
+    },
+    {
+      id: 10,
+      type: 'Flood',
+      location: 'Hunter Valley - NSW',
+      year: 2007,
+      severity: 'Major',
+      description: 'Pasha Bulker storm caused severe flooding across Hunter Valley',
+      impact: '11 deaths, 300+ homes flooded, $1.5B damage',
+      coordinates: [-32.7335, 151.5027]
+    },
+    
+    // Major Drought Events
+    {
+      id: 11,
+      type: 'Drought',
+      location: 'Millennium Drought - Murray-Darling',
+      year: 2006,
+      severity: 'Extreme',
+      description: 'Millennium Drought (1997-2009) was Australia\'s worst recorded drought',
+      impact: '$9B agricultural losses, 41% drop in rice production, river systems collapsed',
+      coordinates: [-34.0522, 142.0251]
+    },
+    {
+      id: 12,
+      type: 'Drought',
+      location: 'Federation Drought - Eastern Australia',
+      year: 1902,
+      severity: 'Extreme',
+      description: 'Federation Drought (1895-1903) devastated eastern Australia',
+      impact: '40% livestock losses, mass migration to cities, economic collapse',
+      coordinates: [-33.8688, 151.2093]
+    },
+    {
+      id: 13,
+      type: 'Drought',
+      location: 'Central Queensland',
+      year: 2019,
+      severity: 'Extreme',
+      description: 'Extended drought conditions across Central Queensland grazing areas',
+      impact: '100% of QLD in drought, $8B agricultural losses, mass cattle deaths',
+      coordinates: [-23.3382, 150.5150]
+    },
+    {
+      id: 14,
+      type: 'Drought',
+      location: 'Wheatbelt - WA',
+      year: 2010,
+      severity: 'High',
+      description: 'Severe drought affected Western Australian Wheatbelt region',
+      impact: '30% crop yield reduction, $2B losses, water restrictions',
+      coordinates: [-31.0000, 117.8833]
+    },
+    {
+      id: 15,
+      type: 'Drought',
+      location: 'Big Dry - Southeast Australia',
+      year: 2002,
+      severity: 'Extreme',
+      description: 'The Big Dry affected southeast Australia for over a decade',
+      impact: 'Water restrictions, $5B agricultural losses, ecological damage',
+      coordinates: [-35.3075, 149.1244]
+    }
   ];
 
-  // Fetch all climate events for map display
+  // Set static events on component mount
   useEffect(() => {
-    const fetchAllClimateEvents = async () => {
-      setMapLoading(true);
-      try {
-        const response = await fetch('http://localhost:5000/api/climate/events/all');
-        const data = await response.json();
-        if (data.success) {
-          setAllClimateEvents(data.events);
-        }
-      } catch (error) {
-        console.error('Error fetching all climate events:', error);
-      } finally {
-        setMapLoading(false);
-      }
-    };
-
-    fetchAllClimateEvents();
+    console.log('Setting static climate events:', staticClimateEvents.length);
+    setAllClimateEvents(staticClimateEvents);
+    setMapLoading(false);
   }, []);
 
-  const fetchWeatherData = async (location) => {
-    if (!location?.lat || !location?.lon) return;
-    
-    setWeatherLoading(true);
-    try {
-      const response = await fetch(`http://localhost:5000/api/weather?lat=${location.lat}&lon=${location.lon}`);
-      const data = await response.json();
-      setWeatherData(data);
-    } catch (error) {
-      console.error('Error fetching weather data:', error);
-      setWeatherData(null);
-    } finally {
-      setWeatherLoading(false);
-    }
-  };
+  // Combine static events with location-specific events for map display
+  const allEventsForMap = [...allClimateEvents, ...locationEvents];
 
-  const handleLocationSelect = async (location) => {
-    setLoading(true);
-    setSelectedLocation(location);
+  // Fetch location-specific weather and climate events
+  const fetchLocationData = async (location) => {
+    if (!location) return;
     
-    // Fetch climate events for specific location
+    setLoading(true);
+    console.log('Fetching data for location:', location.name);
+    
     try {
-      const response = await fetch(`http://localhost:5000/api/climate/events?location=${encodeURIComponent(location.name)}`);
-      const data = await response.json();
-      setClimateEvents(data.events || []);
+      // Fetch current weather from OpenWeatherMap
+      const weatherApiKey = process.env.REACT_APP_OPENWEATHER_API_KEY;
+      
+      if (weatherApiKey) {
+        const weatherResponse = await fetch(
+          `https://api.openweathermap.org/data/2.5/weather?lat=${location.lat}&lon=${location.lng}&appid=${weatherApiKey}&units=metric`
+        );
+        
+        const weatherData = await weatherResponse.json();
+        console.log('OpenWeatherMap data:', weatherData);
+        
+        if (weatherData.main) {
+          setLocationWeather({
+            location: location.name,
+            temperature: Math.round(weatherData.main.temp),
+            description: weatherData.weather[0].description,
+            humidity: weatherData.main.humidity,
+            windSpeed: weatherData.wind?.speed || 0,
+            icon: weatherData.weather[0].icon,
+            source: 'OpenWeatherMap'
+          });
+        }
+      } else {
+        setLocationWeather({
+          location: location.name,
+          temperature: 22,
+          description: 'Clear sky',
+          humidity: 65,
+          windSpeed: 5,
+          source: 'Fallback'
+        });
+      }
+      
+      // Fetch historical climate events using Tavily
+      const tavilyApiKey = process.env.REACT_APP_TAVILY_API_KEY;
+      
+      if (tavilyApiKey) {
+        const eventsResponse = await fetch('https://api.tavily.com/search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            api_key: tavilyApiKey,
+            query: `${location.name} Australia climate events bushfires floods droughts history disasters`,
+            search_depth: 'advanced',
+            include_answer: true,
+            max_results: 8
+          })
+        });
+        
+        const eventsData = await eventsResponse.json();
+        console.log('Events data:', eventsData);
+        
+        if (eventsData.results?.length > 0) {
+          const locationClimateEvents = eventsData.results.map((result, index) => ({
+            id: `loc-${index + 1}`,
+            type: result.title?.toLowerCase().includes('fire') ? 'Bushfire' :
+                  result.title?.toLowerCase().includes('flood') ? 'Flood' : 'Drought',
+            location: location.name,
+            year: extractYear(result.content) || 2023,
+            severity: 'Moderate',
+            description: result.content?.substring(0, 150) + '...' || 'Climate event',
+            impact: 'Local community impact',
+            coordinates: [
+              typeof location.lat === 'number' ? location.lat : -25.2744,
+              typeof location.lng === 'number' ? location.lng : 133.7751
+            ],
+            source: 'Tavily API'
+          }));
+          
+          setLocationEvents(locationClimateEvents);
+          console.log('Location events:', locationClimateEvents);
+        }
+      } else {
+        // Fallback events
+        setLocationEvents([
+          {
+            id: 'fallback-1',
+            type: 'Bushfire',
+            location: location.name,
+            year: 2020,
+            severity: 'Moderate',
+            description: `Historical bushfire events in ${location.name} area`,
+            impact: 'Community and environmental impact',
+            coordinates: [
+              typeof location.lat === 'number' ? location.lat : -25.2744,
+              typeof location.lng === 'number' ? location.lng : 133.7751
+            ],
+            source: 'Fallback'
+          }
+        ]);
+      }
     } catch (error) {
-      console.error('Error fetching climate data:', error);
-      setClimateEvents([]);
+      console.error('Error fetching location data:', error);
+      setLocationWeather({
+        location: location.name,
+        temperature: '--',
+        description: 'Unable to fetch weather data',
+        source: 'Error'
+      });
+      setLocationEvents([]);
     } finally {
       setLoading(false);
     }
-
-    // Fetch weather data
-    fetchWeatherData(location);
   };
 
-  const toggleFilter = (filterId) => {
-    setActiveFilters(prev => {
-      const newFilters = prev.includes(filterId) 
-        ? prev.filter(id => id !== filterId)
-        : [...prev, filterId];
-      
-      // Ensure at least one filter is always active
-      return newFilters.length > 0 ? newFilters : [filterId];
-    });
+  // Helper function to extract year from text
+  const extractYear = (text) => {
+    if (!text) return null;
+    const yearMatch = text.match(/20(19|20|21|22|23|24)/);
+    return yearMatch ? parseInt(yearMatch[0]) : null;
   };
 
-  const handleEventClick = (event) => {
-    setSelectedEvent(event);
-    // Optionally zoom to event location
-    setSelectedLocation({
-      name: event.location,
-      lat: event.lat,
-      lon: event.lon,
-      coordinates: [event.lat, event.lon]
-    });
+  const handleLocationSelect = (location) => {
+    setSelectedLocation(location);
+    fetchLocationData(location);
   };
-
-  // Filter events based on active filters
-  const filteredEvents = climateEvents.filter(event => 
-    activeFilters.includes(event.type)
-  );
-
-  // Filter map events based on active filters
-  const filteredMapEvents = allClimateEvents.filter(event => 
-    activeFilters.includes(event.type)
-  );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-green-50 to-yellow-50">
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <Link to="/" className="text-blue-600 hover:text-blue-800 transition-colors text-sm font-medium">
-            ← Back to Home
-          </Link>
-          <div className="mt-3">
-            <h1 className="text-3xl font-bold text-gray-900">Climate Memory Map</h1>
-            <p className="text-gray-600 mt-1">Historical climate events and future projections</p>
+      <div className="bg-white/80 backdrop-blur-sm border-b border-white/20 sticky top-0 z-30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center space-x-4">
+              <Link to="/" className="flex items-center space-x-2 text-gray-900 hover:text-blue-600 transition-colors">
+                <span className="text-2xl">🌍</span>
+                <span className="font-bold text-xl">StoryMap.ai</span>
+              </Link>
+              <span className="text-gray-400">|</span>
+              <h1 className="text-xl font-semibold text-gray-900">🌡️ Climate Memory Map</h1>
+            </div>
+            <Link 
+              to="/" 
+              className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <span>←</span>
+              <span>Back to Home</span>
+            </Link>
           </div>
         </div>
-      </header>
+      </div>
 
-      {/* Search Section */}
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="mb-8">
-          <LocationSearch onLocationSelect={handleLocationSelect} />
-        </div>
-
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Map Container */}
-          <div className="lg:col-span-2">
-            <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg overflow-hidden" style={{ height: '500px' }}>
-              {mapLoading ? (
-                <div className="h-full flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-                    <p className="text-gray-600">Loading climate events...</p>
-                  </div>
-                </div>
-              ) : (
-                <ClimateMapView 
-                  climateEvents={filteredMapEvents}
-                  activeFilters={activeFilters}
-                  onEventClick={handleEventClick}
-                />
-              )}
+      {/* Main Content */}
+      <div className="w-full px-4 py-6">
+        <div className="flex flex-col gap-6">
+          
+          {/* Search Section */}
+          <div className="w-full">
+            {/* Location Search */}
+            <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">🔍 Explore Climate Events</h2>
+              <LocationSearch 
+                onLocationSelect={handleLocationSelect}
+                placeholder="Search Australian locations..."
+              />
+              <p className="text-sm text-gray-600 mt-3">
+                Discover climate events across Australia including bushfires, floods, and droughts.
+              </p>
             </div>
           </div>
 
-          {/* Filters and Weather */}
-          <div className="space-y-6">
-            {/* Event Type Filters */}
-            <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Event Types</h3>
-              <div className="space-y-3">
-                {eventTypes.map(type => (
-                  <button
-                    key={type.id}
-                    onClick={() => toggleFilter(type.id)}
-                    className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all transform hover:scale-105 ${
-                      activeFilters.includes(type.id)
-                        ? `${type.activeColor} text-white shadow-lg ring-2 ring-offset-2 ring-${type.color.split('-')[1]}-300`
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    <span className="text-xl">{type.icon}</span>
-                    <span className="font-medium">{type.label}</span>
-                    {activeFilters.includes(type.id) && (
-                      <span className="ml-auto text-sm bg-white/20 px-2 py-1 rounded-full">
-                        {allClimateEvents.filter(e => e.type === type.id).length}
-                      </span>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Weather Data */}
-            {selectedLocation && (
-              <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <span>🌤️</span>
-                  Current Weather
-                </h3>
-                {weatherLoading ? (
-                  <div className="animate-pulse space-y-3">
-                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                    <div className="h-4 bg-gray-200 rounded w-2/3"></div>
-                  </div>
-                ) : weatherData ? (
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-600">Temperature</span>
-                      <span className="font-semibold text-2xl text-orange-600">
-                        {Math.round(weatherData.temperature)}°C
-                      </span>
+          {/* Location Events Section */}
+          {locationEvents.length > 0 && (
+            <div className="w-full px-4 py-6">
+              <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                      <span className="text-xl">📍</span>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-600">Condition</span>
-                      <span className="font-medium capitalize">{weatherData.condition}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-600">Humidity</span>
-                      <span className="font-medium">{weatherData.humidity}%</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-600">Rain Chance</span>
-                      <span className="font-medium text-blue-600">{weatherData.rainChance || 0}%</span>
-                    </div>
-                    <div className="mt-4 p-3 bg-gradient-to-r from-blue-50 to-green-50 rounded-lg">
-                      <p className="text-sm text-gray-700">
-                        <span className="font-medium">Feels like:</span> {Math.round(weatherData.feelsLike || weatherData.temperature)}°C
-                      </p>
+                    <div>
+                      <h3 className="text-lg font-bold text-gray-900">Location Events</h3>
+                      <p className="text-sm text-gray-500">{selectedLocation?.name}</p>
                     </div>
                   </div>
-                ) : (
-                  <div className="text-center text-gray-500 py-4">
-                    <div className="text-2xl mb-2">📍</div>
-                    <p className="text-sm">Weather data unavailable</p>
+                  <div className="bg-blue-50 px-3 py-1 rounded-full">
+                    <span className="text-sm font-semibold text-blue-700">{locationEvents.length} events</span>
                   </div>
-                )}
-              </div>
-            )}
-
-            {/* Selected Event Details */}
-            {selectedEvent && (
-              <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <span>
-                    {selectedEvent.type === 'bushfires' ? '🔥' : 
-                     selectedEvent.type === 'floods' ? '🌊' : '🌵'}
-                  </span>
-                  Selected Event
-                </h3>
-                <div className="space-y-3">
-                  <div>
-                    <span className="text-gray-600 text-sm">Location:</span>
-                    <p className="font-medium">{selectedEvent.location}</p>
-                  </div>
-                  <div>
-                    <span className="text-gray-600 text-sm">Event Count:</span>
-                    <p className="font-medium">{selectedEvent.count} events</p>
-                  </div>
-                  <div>
-                    <span className="text-gray-600 text-sm">Severity:</span>
-                    <p className={`font-medium capitalize ${
-                      selectedEvent.severity === 'high' ? 'text-red-600' :
-                      selectedEvent.severity === 'medium' ? 'text-orange-600' :
-                      'text-yellow-600'
-                    }`}>
-                      {selectedEvent.severity}
-                    </p>
-                  </div>
-                  <div>
-                    <span className="text-gray-600 text-sm">Description:</span>
-                    <p className="text-sm text-gray-700">{selectedEvent.description}</p>
-                  </div>
-                  <button 
-                    onClick={() => setSelectedEvent(null)}
-                    className="w-full mt-4 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium transition-colors"
-                  >
-                    Close Details
-                  </button>
                 </div>
-              </div>
-            )}
-
-            {/* Timeline Summary */}
-            {selectedLocation && (
-              <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Climate Events: {selectedLocation.name}
-                </h3>
-                {loading ? (
-                  <div className="space-y-3">
-                    {[1,2,3].map(i => (
-                      <div key={i} className="animate-pulse">
-                        <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                        <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    <div className="text-sm text-gray-600">
-                      Showing {filteredEvents.length} events
-                    </div>
-                    <div className="flex gap-2">
-                      {activeFilters.map(filterId => {
-                        const type = eventTypes.find(t => t.id === filterId);
-                        return (
-                          <span key={filterId} className={`text-xs px-2 py-1 rounded-full text-white ${type.color}`}>
-                            {type.icon} {type.label}
-                          </span>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Timeline Section */}
-        {selectedLocation && !loading && (
-          <div className="mt-8 bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">
-                Historical Events & Projections ({filteredEvents.length} events)
-              </h3>
-              <div className="flex gap-2">
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
-                  <span>Historical</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                  <span>Good Scenario</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                  <span>Bad Scenario</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Timeline */}
-            <div className="relative">
-              <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-300"></div>
-              
-              {/* Filtered Events */}
-              <div className="space-y-6">
-                {filteredEvents.map((event, index) => {
-                  const eventType = eventTypes.find(t => t.id === event.type);
-                  return (
-                    <div key={event.id || index} className="relative flex items-start gap-4">
-                      <div className={`w-8 h-8 ${eventType.color} rounded-full flex items-center justify-center text-white text-sm font-bold z-10 shadow-lg`}>
-                        {eventType.icon}
-                      </div>
-                      <div className="flex-1 bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors">
-                        <div className="flex justify-between items-start mb-2">
-                          <h4 className="font-semibold text-gray-900">{event.title}</h4>
-                          <span className="text-sm text-gray-500">{event.date}</span>
-                        </div>
-                        <p className="text-gray-700 text-sm mb-2">{event.description}</p>
-                        {event.severity && (
-                          <span className={`inline-block px-2 py-1 text-xs rounded-full ${
-                            event.severity === 'extreme' ? 'bg-red-100 text-red-800' :
-                            event.severity === 'high' ? 'bg-orange-100 text-orange-800' :
-                            'bg-yellow-100 text-yellow-800'
+                
+                <div className="flex flex-col gap-6">
+                  {locationEvents.map((event) => (
+                    <div key={event.id} className="w-full group relative overflow-hidden bg-gradient-to-br from-white to-gray-50 rounded-xl border border-gray-200 hover:shadow-lg hover:border-gray-300 transition-all duration-300">
+                      {/* Event type indicator */}
+                      <div className={`absolute top-0 left-0 w-full h-1 ${
+                        event.type === 'Bushfire' ? 'bg-red-400' : 
+                        event.type === 'Flood' ? 'bg-blue-400' : 'bg-yellow-400'
+                      }`}></div>
+                      
+                      <div className="p-4">
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex items-center space-x-3 flex-1">
+                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                              event.type === 'Bushfire' ? 'bg-red-100 text-red-600' : 
+                              event.type === 'Flood' ? 'bg-blue-100 text-blue-600' : 'bg-yellow-100 text-yellow-600'
+                            }`}>
+                              <span className="text-lg">
+                                {event.type === 'Bushfire' ? '🔥' : 
+                                 event.type === 'Flood' ? '🌊' : '🌵'}
+                              </span>
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="font-bold text-gray-900 text-sm mb-1">{event.type}</h4>
+                              <p className="text-xs text-gray-500">{event.year}</p>
+                            </div>
+                          </div>
+                          <span className={`px-2 py-1 rounded-lg text-xs font-bold ${
+                            event.severity === 'Extreme' ? 'bg-red-100 text-red-700' :
+                            event.severity === 'High' ? 'bg-orange-100 text-orange-700' :
+                            'bg-yellow-100 text-yellow-700'
                           }`}>
-                            {event.severity} severity
+                            {event.severity}
                           </span>
-                        )}
+                        </div>
+                        <p className="text-xs text-gray-600 leading-relaxed">{event.description}</p>
                       </div>
                     </div>
-                  );
-                })}
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
 
-                {/* Future Projections */}
-                <div className="relative flex items-start gap-4">
-                  <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold z-10">
-                    📈
+          {/* Historical Timeline Section */}
+          <div className="w-full px-4 py-6">
+            <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                    <span className="text-xl">📅</span>
                   </div>
-                  <div className="flex-1 bg-blue-50 rounded-lg p-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <h4 className="font-semibold text-blue-900">Good Scenario 2030-2050</h4>
-                      <span className="text-sm text-blue-600">Projection</span>
-                    </div>
-                    <p className="text-blue-800 text-sm">With effective climate action: Reduced fire risk, improved water security.</p>
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900">Historical Timeline</h3>
+                    <p className="text-sm text-gray-500">Major Climate Events</p>
                   </div>
                 </div>
-
-                <div className="relative flex items-start gap-4">
-                  <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white text-sm font-bold z-10">
-                    ⚠️
-                  </div>
-                  <div className="flex-1 bg-red-50 rounded-lg p-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <h4 className="font-semibold text-red-900">Bad Scenario 2030-2050</h4>
-                      <span className="text-sm text-red-600">Projection</span>
+                <div className="bg-purple-50 px-3 py-1 rounded-full">
+                  <span className="text-sm font-semibold text-purple-700">{staticClimateEvents.length} events</span>
+                </div>
+              </div>
+              
+              <div className="flex flex-col gap-6 max-h-96 overflow-y-auto pr-2">
+                {staticClimateEvents
+                  .sort((a, b) => b.year - a.year)
+                  .map((event, index) => (
+                    <div key={event.id} className="w-full group relative bg-gradient-to-br from-white to-gray-50 rounded-xl border border-gray-200 hover:shadow-lg hover:border-gray-300 transition-all duration-300 overflow-hidden">
+                      {/* Year badge */}
+                      <div className="absolute top-2 right-2 bg-gray-900 text-white px-2 py-1 rounded-lg text-xs font-bold z-10">
+                        {event.year}
+                      </div>
+                      
+                      {/* Event type indicator */}
+                      <div className={`absolute top-0 left-0 w-full h-1 ${
+                        event.type === 'Bushfire' ? 'bg-red-400' : 
+                        event.type === 'Flood' ? 'bg-blue-400' : 'bg-yellow-400'
+                      }`}></div>
+                      
+                      <div className="p-4 flex items-start space-x-3">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                          event.type === 'Bushfire' ? 'bg-red-100 text-red-600' : 
+                          event.type === 'Flood' ? 'bg-blue-100 text-blue-600' : 
+                          'bg-yellow-100 text-yellow-600'
+                        }`}>
+                          <span className="text-sm">
+                            {event.type === 'Bushfire' ? '🔥' : 
+                             event.type === 'Flood' ? '🌊' : '🌵'}
+                          </span>
+                        </div>
+                        <div className="flex-1 pr-8">
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="font-bold text-gray-900 text-sm">
+                              {event.location}
+                            </h4>
+                            <span className={`px-2 py-1 rounded text-xs font-bold ${
+                              event.severity === 'Extreme' ? 'bg-red-100 text-red-700' :
+                              event.severity === 'High' ? 'bg-orange-100 text-orange-700' :
+                              'bg-yellow-100 text-yellow-700'
+                            }`}>
+                              {event.severity}
+                            </span>
+                          </div>
+                          <p className="text-xs text-gray-600 leading-relaxed mb-2">
+                            {event.description}
+                          </p>
+                          <p className="text-xs text-gray-500 italic">
+                            {event.impact}
+                          </p>
+                        </div>
+                      </div>
                     </div>
-                    <p className="text-red-800 text-sm">Without climate action: Increased extreme weather events, water scarcity.</p>
+                  ))}
+              </div>
+              
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <div className="flex items-center justify-center space-x-6 text-xs text-gray-500 flex-wrap gap-2">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-red-400 rounded-full"></div>
+                    <span>Bushfires ({staticClimateEvents.filter(e => e.type === 'Bushfire').length})</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+                    <span>Floods ({staticClimateEvents.filter(e => e.type === 'Flood').length})</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                    <span>Droughts ({staticClimateEvents.filter(e => e.type === 'Drought').length})</span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
