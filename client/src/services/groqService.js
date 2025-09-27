@@ -76,10 +76,18 @@ const getTavilyData = async (location, theme) => {
 export const generateNarrative = async (location, theme = 'cultural heritage') => {
   const groqApiKey = process.env.REACT_APP_GROQ_API_KEY;
   
+  console.log('Environment check:', {
+    groqKey: groqApiKey ? 'Present' : 'Missing',
+    tavilyKey: process.env.REACT_APP_TAVILY_API_KEY ? 'Present' : 'Missing',
+    location,
+    theme
+  });
+  
   // Get Tavily data with timeout
   const tavilyDataPromise = getTavilyData(location, theme);
   
   if (!groqApiKey) {
+    console.log('No Groq API key, using fallback');
     const tavilyData = await tavilyDataPromise;
     return {
       content: tavilyData || getFastFallbackStory(location, theme),
@@ -129,7 +137,7 @@ Write a 200-word story about ${location} focusing on ${theme}. Make it engaging 
       dataSource: tavilyData ? 'Tavily + Groq APIs' : 'Groq API'
     };
   } catch (error) {
-    console.log('Using fast fallback due to error');
+    console.log('API error, using fallback:', error.message);
     return {
       content: getFastFallbackStory(location, theme),
       title: `Heritage of ${location}`,
@@ -185,15 +193,22 @@ export const generateMultipleStories = async (location) => {
 };
 
 const getFastFallbackStory = (location, theme) => {
-  const fallbacks = {
+  const locationSpecific = {
+    'canberra': {
+      'cultural heritage': `Canberra, Australia's planned capital, represents a unique blend of Indigenous heritage and modern Australian identity. The Ngunnawal people have been custodians of this land for over 20,000 years, with their cultural sites still visible throughout the region. When Canberra was established in 1913, it became a symbol of Australian federation and democracy, housing Parliament House and national institutions that tell the story of our nation.`,
+      'pioneering spirit': `Canberra's creation was itself an act of pioneering vision - building a capital city from scratch in the Australian bush. The city's founders, including Walter Burley Griffin, imagined a garden city that would embody Australian values. Today, Canberra continues this pioneering tradition through innovation in government, education, and technology, making it a hub for forward-thinking Australians.`,
+      'natural landscape': `Nestled in the Australian Capital Territory, Canberra is surrounded by native bushland, rolling hills, and the iconic Lake Burley Griffin. The city's design incorporates the natural landscape, with native vegetation and wildlife corridors preserved throughout urban areas. From Mount Ainslie to the Brindabella Ranges, Canberra offers stunning vistas that change with the seasons.`,
+      'community resilience': `Canberra's community has faced significant challenges, including the devastating 2003 bushfires that reached the city's suburbs. The response showed the strength of Canberrans - neighbors helping neighbors, emergency services working tirelessly, and the community rebuilding stronger. This resilience continues today as Canberra adapts to climate change and grows as a sustainable, liveable city.`
+    }
+  };
+
+  const genericFallbacks = {
     'cultural heritage': `${location} stands as a testament to Australia's rich cultural tapestry. Here, ancient Aboriginal traditions blend with colonial history and modern multicultural influences. The land holds stories of traditional custodians who have maintained their connection to country for thousands of years, alongside tales of early settlers who built communities with determination and hope.`,
-    
     'pioneering spirit': `The pioneering spirit of ${location} reflects the resilience and determination that built rural Australia. From early explorers and settlers to modern farmers and entrepreneurs, this region has been shaped by people willing to take on challenges and build something lasting. Their legacy lives on in the strong communities and thriving industries that define ${location} today.`,
-    
     'natural landscape': `${location}'s natural landscape tells a story of ancient geology and diverse ecosystems. From rolling hills to vast plains, from native bushland to cultivated fields, the environment here has shaped both human settlement and wildlife habitats. This land continues to inspire visitors with its raw beauty and ecological significance.`,
-    
     'community resilience': `The people of ${location} have shown remarkable resilience through droughts, floods, and other challenges that test rural Australian communities. Their ability to come together, support one another, and rebuild stronger demonstrates the enduring spirit that defines regional Australia. This resilience continues to be the foundation of community life.`
   };
   
-  return fallbacks[theme] || `Discover the remarkable story of ${location}, where Australian heritage and community spirit create something truly special.`;
+  const locationKey = location.toLowerCase();
+  return locationSpecific[locationKey]?.[theme] || genericFallbacks[theme] || `Discover the remarkable story of ${location}, where Australian heritage and community spirit create something truly special.`;
 };
